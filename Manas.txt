@@ -1,0 +1,497 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .app { max-width: 420px; margin: 0 auto; min-height: 700px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; position: relative; }
+  .screen { display: none; flex-direction: column; min-height: 700px; }
+  .screen.active { display: flex; }
+  .btn-primary { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary { width: 100%; padding: 14px; background: transparent; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 15px; cursor: pointer; transition: background 0.15s; }
+  .btn-secondary:hover { background: var(--color-background-secondary); }
+  .btn-choice { width: 100%; padding: 13px 16px; background: var(--color-background-secondary); color: var(--color-text-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; text-align: left; transition: border-color 0.15s, background 0.15s; margin-bottom: 8px; }
+  .btn-choice:hover { border-color: #1D9E75; background: #E1F5EE; color: #085041; }
+  .tag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .tag-green { background: #E1F5EE; color: #085041; }
+  .tag-amber { background: #FAEEDA; color: #633806; }
+  .tag-red { background: #FCEBEB; color: #501313; }
+  .nav-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .back-btn { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 14px; display: flex; align-items: center; gap: 4px; padding: 0; }
+  .back-btn:hover { color: var(--color-text-primary); }
+  .progress-bar { height: 3px; background: var(--color-background-secondary); }
+  .progress-fill { height: 100%; background: #1D9E75; transition: width 0.4s; }
+  .score-ring { position: relative; display: flex; align-items: center; justify-content: center; }
+  .resource-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 0.5px solid var(--color-border-tertiary); transition: border-color 0.15s; }
+  .resource-card:hover { border-color: #1D9E75; }
+  .resource-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
+  .bottom-nav { display: flex; border-top: 0.5px solid var(--color-border-tertiary); padding: 10px 0 6px; }
+  .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; color: var(--color-text-tertiary); font-size: 10px; padding: 4px 0; }
+  .bottom-nav-item.active { color: #1D9E75; }
+  .bottom-nav-item i { font-size: 20px; }
+  .alert-bubble { background: #FEF3C7; border: 0.5px solid #F59E0B; border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 16px; }
+</style>
+
+<!-- SCREEN 1: SPLASH -->
+<div class="app">
+<div class="screen active" id="s-splash" style="align-items:center; justify-content:center; padding: 40px 32px; text-align:center;">
+  <div style="width:72px;height:72px;background:#1D9E75;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+    <i class="ti ti-brain" style="font-size:36px;color:#fff;" aria-hidden="true"></i>
+  </div>
+  <h1 style="font-size:32px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">Manas</h1>
+  <p style="font-size:15px;color:var(--color-text-secondary);margin-bottom:8px;">AI for Mental Health Detection</p>
+  <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:48px;">On-Device &nbsp;·&nbsp; Private &nbsp;·&nbsp; Always</p>
+  <div style="background:#E1F5EE;border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:32px;text-align:left;">
+    <p style="font-size:12px;color:#085041;line-height:1.6;"><i class="ti ti-lock" style="font-size:14px;vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i> All your data stays on this device. Nothing is ever uploaded. No account needed.</p>
+  </div>
+  <button class="btn-primary" onclick="go('s-onboard1')">Get started</button>
+  <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:16px;">Takes about 2 minutes</p>
+</div>
+
+<!-- SCREEN 2: ONBOARDING Q1 -->
+<div class="screen" id="s-onboard1" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-splash')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">1 of 2</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+  <div style="padding:28px 24px; flex:1;">
+    <p style="font-size:12px;color:#1D9E75;font-weight:500;margin-bottom:8px;">Quick check-in</p>
+    <h2 style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;line-height:1.4;">Over the past 2 weeks, how often have you felt little interest or pleasure in things?</h2>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:28px;">This helps us understand your starting point.</p>
+    <button class="btn-choice" onclick="go('s-onboard2')">Not at all — I've been enjoying things</button>
+    <button class="btn-choice" onclick="go('s-onboard2')">A few days</button>
+    <button class="btn-choice" onclick="go('s-onboard2')">More than half the days</button>
+    <button class="btn-choice" onclick="go('s-onboard2')">Nearly every day</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: ONBOARDING Q2 -->
+<div class="screen" id="s-onboard2" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-onboard1')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">2 of 2</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+  <div style="padding:28px 24px; flex:1;">
+    <p style="font-size:12px;color:#1D9E75;font-weight:500;margin-bottom:8px;">Quick check-in</p>
+    <h2 style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;line-height:1.4;">How often have you felt nervous, anxious, or unable to stop worrying?</h2>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:28px;">Honest answers help us personalise better for you.</p>
+    <button class="btn-choice" onclick="go('s-permissions')">Not at all</button>
+    <button class="btn-choice" onclick="go('s-permissions')">A few days</button>
+    <button class="btn-choice" onclick="go('s-permissions')">More than half the days</button>
+    <button class="btn-choice" onclick="go('s-permissions')">Nearly every day</button>
+  </div>
+</div>
+
+<!-- SCREEN 4: PERMISSIONS -->
+<div class="screen" id="s-permissions" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-onboard2')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Permissions</span>
+  </div>
+  <div style="padding:24px; flex:1; overflow-y:auto;">
+    <h2 style="font-size:18px;font-weight:500;margin-bottom:6px;">What Manas will track</h2>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;">Everything stays on your device. You can turn off any signal anytime.</p>
+
+    <div id="perms">
+    </div>
+
+    <div style="background:#E1F5EE;border-radius:var(--border-radius-md);padding:12px 14px;margin-top:16px;margin-bottom:24px;">
+      <p style="font-size:12px;color:#085041;line-height:1.6;"><i class="ti ti-shield-check" style="font-size:14px;vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i> <strong>Your voice and messages are never recorded or read.</strong> Only patterns — not content.</p>
+    </div>
+    <button class="btn-primary" onclick="go('s-dashboard')">Start monitoring</button>
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:12px;text-align:center;">Manas will spend 2 weeks learning your normal patterns before any insights are shown.</p>
+  </div>
+</div>
+
+<!-- SCREEN 5: DASHBOARD -->
+<div class="screen" id="s-dashboard" style="padding:0;">
+  <div style="padding:20px 20px 0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <p style="font-size:13px;color:var(--color-text-secondary);">Good evening</p>
+        <h2 style="font-size:20px;font-weight:500;">Arjun 👋</h2>
+      </div>
+      <div style="width:36px;height:36px;background:#E1F5EE;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <i class="ti ti-bell" style="font-size:18px;color:#1D9E75;" aria-hidden="true"></i>
+      </div>
+    </div>
+
+    <!-- Score card -->
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:20px;margin-bottom:16px;border:0.5px solid var(--color-border-tertiary);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <p style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;">Wellness score</p>
+          <div style="display:flex;align-items:baseline;gap:6px;">
+            <span style="font-size:42px;font-weight:500;color:#D85A30;">38</span>
+            <span style="font-size:16px;color:var(--color-text-secondary);">/ 100</span>
+          </div>
+          <span class="tag tag-red" style="margin-top:6px;">Needs attention</span>
+        </div>
+        <div style="position:relative;width:80px;height:80px;">
+          <svg viewBox="0 0 80 80" width="80" height="80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#FCEBEB" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#D85A30" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="124" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+          </svg>
+          <span style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:500;color:#D85A30;">38%</span>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">7-day trend</p>
+      <canvas id="trendChart" height="60"></canvas>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert-bubble">
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <i class="ti ti-alert-circle" style="font-size:18px;color:#D97706;margin-top:2px;flex-shrink:0;" aria-hidden="true"></i>
+        <div>
+          <p style="font-size:13px;font-weight:500;color:#633806;margin-bottom:4px;">We've noticed some changes</p>
+          <p style="font-size:12px;color:#854F0B;line-height:1.5;">Your patterns have shifted over the past 2 weeks. How are you actually feeling?</p>
+          <button style="margin-top:10px;background:#1D9E75;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;font-weight:500;" onclick="go('s-checkin')">Check in now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signals -->
+    <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Signal breakdown</p>
+    <div id="signals-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;"></div>
+  </div>
+  <div style="flex:1;"></div>
+  <div class="bottom-nav">
+    <div class="bottom-nav-item active"><i class="ti ti-home" aria-hidden="true"></i>Home</div>
+    <div class="bottom-nav-item" onclick="go('s-journal')"><i class="ti ti-notebook" aria-hidden="true"></i>Journal</div>
+    <div class="bottom-nav-item" onclick="go('s-resources')"><i class="ti ti-heart" aria-hidden="true"></i>Resources</div>
+    <div class="bottom-nav-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+  </div>
+</div>
+
+<!-- SCREEN 6: CHECK-IN -->
+<div class="screen" id="s-checkin" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-dashboard')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Check-in</span>
+  </div>
+  <div style="padding:28px 24px;flex:1;">
+    <div style="width:48px;height:48px;background:#E1F5EE;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+      <i class="ti ti-mood-smile" style="font-size:24px;color:#1D9E75;" aria-hidden="true"></i>
+    </div>
+    <h2 style="font-size:20px;font-weight:500;margin-bottom:8px;line-height:1.4;">Hey Arjun, how are you actually feeling?</h2>
+    <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:28px;">No wrong answers. This is just between you and your phone.</p>
+    <button class="btn-choice" onclick="go('s-dashboard')" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">😊</span>
+      <span>Pretty good actually</span>
+    </button>
+    <button class="btn-choice" onclick="go('s-dashboard')" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">😐</span>
+      <span>Just tired, nothing serious</span>
+    </button>
+    <button class="btn-choice" onclick="go('s-resources')" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">😔</span>
+      <span>Honestly, not great</span>
+    </button>
+    <button class="btn-choice" onclick="go('s-crisis')" style="display:flex;align-items:center;gap:10px;border-color:#F09595;">
+      <span style="font-size:20px;">😞</span>
+      <span>I've been really struggling</span>
+    </button>
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin-top:20px;text-align:center;">A few weeks ago when you were feeling better, you wrote yourself a message. <button style="background:none;border:none;color:#1D9E75;cursor:pointer;font-size:12px;padding:0;" onclick="go('s-futureme')">Read it →</button></p>
+  </div>
+</div>
+
+<!-- SCREEN 7: FUTURE ME -->
+<div class="screen" id="s-futureme" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-checkin')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Message to yourself</span>
+  </div>
+  <div style="padding:28px 24px;flex:1;display:flex;flex-direction:column;">
+    <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:16px;">Written by you · 3 weeks ago · when your score was 72</p>
+    <div style="background:var(--color-background-secondary);border-left:3px solid #1D9E75;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:20px;flex:1;margin-bottom:24px;">
+      <p style="font-size:16px;color:var(--color-text-primary);line-height:1.8;font-style:italic;">"Hey future me — if you're reading this, things are probably rough right now. That's okay. You've gotten through hard weeks before, remember the semester 2 exams?<br><br>Call Vikram. He won't judge you, he never does. And please eat something proper today.<br><br>This feeling is temporary. You're not."</p>
+      <p style="font-size:13px;color:var(--color-text-secondary);margin-top:16px;">— Arjun, 3 weeks ago</p>
+    </div>
+    <button class="btn-primary" onclick="go('s-resources')">See support options</button>
+    <button class="btn-secondary" style="margin-top:8px;" onclick="go('s-checkin')">Go back</button>
+  </div>
+</div>
+
+<!-- SCREEN 8: RESOURCES -->
+<div class="screen" id="s-resources" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-dashboard')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Support</span>
+  </div>
+  <div style="padding:20px 20px;flex:1;overflow-y:auto;">
+    <h2 style="font-size:18px;font-weight:500;margin-bottom:4px;">You don't have to figure this out alone</h2>
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;">Everything here is free and confidential.</p>
+
+    <p style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;">TRY RIGHT NOW</p>
+    <div class="resource-card" onclick="go('s-breathing')">
+      <div class="resource-icon" style="background:#E1F5EE;"><i class="ti ti-wind" style="color:#1D9E75;" aria-hidden="true"></i></div>
+      <div><p style="font-size:14px;font-weight:500;">Breathing exercise</p><p style="font-size:12px;color:var(--color-text-secondary);">2 minutes · calms your nervous system</p></div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);margin-left:auto;" aria-hidden="true"></i>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon" style="background:#E6F1FB;"><i class="ti ti-pencil" style="color:#185FA5;" aria-hidden="true"></i></div>
+      <div><p style="font-size:14px;font-weight:500;">Journal prompt</p><p style="font-size:12px;color:var(--color-text-secondary);">Write about one thing that made you smile</p></div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);margin-left:auto;" aria-hidden="true"></i>
+    </div>
+
+    <p style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:16px 0 10px;">TALK TO SOMEONE</p>
+    <div class="resource-card">
+      <div class="resource-icon" style="background:#FAEEDA;"><i class="ti ti-phone" style="color:#854F0B;" aria-hidden="true"></i></div>
+      <div><p style="font-size:14px;font-weight:500;">iCall Helpline</p><p style="font-size:12px;color:var(--color-text-secondary);">9152987821 · free · confidential</p></div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);margin-left:auto;" aria-hidden="true"></i>
+    </div>
+    <div class="resource-card">
+      <div class="resource-icon" style="background:#FAEEDA;"><i class="ti ti-phone-call" style="color:#854F0B;" aria-hidden="true"></i></div>
+      <div><p style="font-size:14px;font-weight:500;">Vandrevala Foundation</p><p style="font-size:12px;color:var(--color-text-secondary);">1860-2662-345 · available 24/7</p></div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);margin-left:auto;" aria-hidden="true"></i>
+    </div>
+
+    <p style="font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:16px 0 10px;">NEARBY</p>
+    <div class="resource-card">
+      <div class="resource-icon" style="background:#EAF3DE;"><i class="ti ti-building-hospital" style="color:#3B6D11;" aria-hidden="true"></i></div>
+      <div><p style="font-size:14px;font-weight:500;">College counseling cell</p><p style="font-size:12px;color:var(--color-text-secondary);">Free · on campus · by appointment</p></div>
+      <i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);margin-left:auto;" aria-hidden="true"></i>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="bottom-nav-item" onclick="go('s-dashboard')"><i class="ti ti-home" aria-hidden="true"></i>Home</div>
+    <div class="bottom-nav-item" onclick="go('s-journal')"><i class="ti ti-notebook" aria-hidden="true"></i>Journal</div>
+    <div class="bottom-nav-item active"><i class="ti ti-heart" aria-hidden="true"></i>Resources</div>
+    <div class="bottom-nav-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+  </div>
+</div>
+
+<!-- SCREEN 9: BREATHING -->
+<div class="screen" id="s-breathing" style="padding:0;align-items:center;justify-content:center;">
+  <div class="nav-bar" style="position:absolute;top:0;left:0;right:0;">
+    <button class="back-btn" onclick="go('s-resources')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Breathing</span>
+  </div>
+  <div style="text-align:center;padding:40px 32px;">
+    <div id="breath-circle" style="width:140px;height:140px;border-radius:50%;background:#E1F5EE;border:3px solid #1D9E75;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;transition:transform 4s ease-in-out;">
+      <span id="breath-label" style="font-size:15px;font-weight:500;color:#1D9E75;">Inhale</span>
+    </div>
+    <p id="breath-count" style="font-size:48px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">4</p>
+    <p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:32px;">Box breathing · 4 cycles</p>
+    <button class="btn-primary" id="breath-btn" onclick="startBreath()" style="max-width:200px;margin:0 auto;">Start</button>
+  </div>
+</div>
+
+<!-- SCREEN 10: JOURNAL -->
+<div class="screen" id="s-journal" style="padding:0;">
+  <div class="nav-bar">
+    <button class="back-btn" onclick="go('s-dashboard')"><i class="ti ti-arrow-left" style="font-size:16px;"></i> Back</button>
+    <span style="font-size:13px;color:var(--color-text-tertiary);">Journal</span>
+  </div>
+  <div style="padding:20px 24px;flex:1;">
+    <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:16px;">Today's prompt</p>
+    <div style="background:#E1F5EE;border-radius:var(--border-radius-md);padding:14px;margin-bottom:16px;">
+      <p style="font-size:14px;color:#085041;font-style:italic;">"Write about one thing that used to make you happy. Even if it feels distant right now."</p>
+    </div>
+    <textarea style="width:100%;min-height:200px;padding:14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);font-size:14px;font-family:var(--font-sans);color:var(--color-text-primary);background:var(--color-background-secondary);resize:none;line-height:1.6;" placeholder="Start writing here... your words stay only on this phone."></textarea>
+    <div style="display:flex;align-items:center;gap:6px;margin-top:8px;margin-bottom:20px;">
+      <i class="ti ti-lock" style="font-size:13px;color:var(--color-text-tertiary);" aria-hidden="true"></i>
+      <p style="font-size:11px;color:var(--color-text-tertiary);">Analysed on-device only. Never uploaded.</p>
+    </div>
+    <button class="btn-primary">Save entry</button>
+  </div>
+  <div class="bottom-nav">
+    <div class="bottom-nav-item" onclick="go('s-dashboard')"><i class="ti ti-home" aria-hidden="true"></i>Home</div>
+    <div class="bottom-nav-item active"><i class="ti ti-notebook" aria-hidden="true"></i>Journal</div>
+    <div class="bottom-nav-item" onclick="go('s-resources')"><i class="ti ti-heart" aria-hidden="true"></i>Resources</div>
+    <div class="bottom-nav-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+  </div>
+</div>
+
+<!-- SCREEN 11: CRISIS EXIT -->
+<div class="screen" id="s-crisis" style="padding:0;background:#1D9E75;">
+  <div style="padding:40px 28px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <i class="ti ti-heart" style="font-size:40px;color:#fff;margin-bottom:24px;" aria-hidden="true"></i>
+    <h2 style="font-size:22px;font-weight:500;color:#fff;margin-bottom:12px;line-height:1.4;">Before you go —</h2>
+    <p style="font-size:15px;color:#9FE1CB;line-height:1.7;margin-bottom:24px;">We noticed you've been going through a really tough time. That's okay. You don't have to have it figured out.</p>
+    <div style="background:rgba(255,255,255,0.15);border-radius:var(--border-radius-lg);padding:20px;margin-bottom:24px;">
+      <p style="font-size:13px;color:#E1F5EE;margin-bottom:6px;">Please save this number</p>
+      <p style="font-size:22px;font-weight:500;color:#fff;margin-bottom:4px;">9152987821</p>
+      <p style="font-size:13px;color:#9FE1CB;">iCall · free · confidential · available now</p>
+      <p style="font-size:13px;color:#9FE1CB;margin-top:8px;">You never need to explain anything. Just call.</p>
+    </div>
+    <p style="font-size:14px;color:#E1F5EE;margin-bottom:32px;font-style:italic;">Take care of yourself, Arjun. 💙</p>
+    <button style="background:#fff;color:#1D9E75;border:none;border-radius:var(--border-radius-md);padding:14px;font-size:15px;font-weight:500;cursor:pointer;margin-bottom:10px;" onclick="go('s-resources')">See all support options</button>
+    <button style="background:transparent;color:#9FE1CB;border:0.5px solid rgba(255,255,255,0.3);border-radius:var(--border-radius-md);padding:14px;font-size:15px;cursor:pointer;" onclick="go('s-dashboard')">Go back to app</button>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 's-dashboard') renderDashboard();
+}
+
+const permsData = [
+  { icon: 'ti-moon', label: 'Sleep duration', sub: 'via accelerometer', on: true, color: '#E6F1FB', ic: '#185FA5' },
+  { icon: 'ti-run', label: 'Physical movement', sub: 'steps & activity', on: true, color: '#EAF3DE', ic: '#3B6D11' },
+  { icon: 'ti-message', label: 'App usage time', sub: 'not content', on: true, color: '#FAEEDA', ic: '#854F0B' },
+  { icon: 'ti-keyboard', label: 'Typing rhythm', sub: 'speed & pauses', on: true, color: '#EEEDFE', ic: '#534AB7' },
+  { icon: 'ti-microphone', label: 'Voice tone', sub: 'optional · real-time only', on: false, color: '#FCEBEB', ic: '#993C1D' },
+  { icon: 'ti-map-pin', label: 'Home detection', sub: 'optional · on/off only', on: false, color: '#F1EFE8', ic: '#5F5E5A' },
+];
+
+const permsEl = document.getElementById('perms');
+if (permsEl) {
+  permsData.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:0.5px solid var(--color-border-tertiary);';
+    d.innerHTML = `
+      <div style="width:34px;height:34px;border-radius:8px;background:${p.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="ti ${p.icon}" style="font-size:17px;color:${p.ic};" aria-hidden="true"></i>
+      </div>
+      <div style="flex:1;">
+        <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${p.label}</p>
+        <p style="font-size:11px;color:var(--color-text-tertiary);">${p.sub}</p>
+      </div>
+      <div onclick="togglePerm(${i})" id="toggle-${i}" style="width:40px;height:22px;border-radius:11px;background:${p.on ? '#1D9E75' : 'var(--color-background-secondary)'};border:0.5px solid var(--color-border-tertiary);position:relative;cursor:pointer;transition:background 0.2s;">
+        <div id="thumb-${i}" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:1px;left:${p.on ? '19px' : '1px'};transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+      </div>`;
+    permsEl.appendChild(d);
+  });
+}
+
+function togglePerm(i) {
+  permsData[i].on = !permsData[i].on;
+  const toggle = document.getElementById('toggle-' + i);
+  const thumb = document.getElementById('thumb-' + i);
+  toggle.style.background = permsData[i].on ? '#1D9E75' : 'var(--color-background-secondary)';
+  thumb.style.left = permsData[i].on ? '19px' : '1px';
+}
+
+const signals = [
+  { label: 'Sleep', score: 60, icon: 'ti-moon', color: '#E6F1FB', ic: '#185FA5', note: '10.5 hrs vs 7.5' },
+  { label: 'Movement', score: 35, icon: 'ti-run', color: '#EAF3DE', ic: '#3B6D11', note: 'Very low activity' },
+  { label: 'Social apps', score: 45, icon: 'ti-message', color: '#FAEEDA', ic: '#854F0B', note: '40 min vs 2 hrs' },
+  { label: 'Typing', score: 55, icon: 'ti-keyboard', color: '#EEEDFE', ic: '#534AB7', note: '48 vs 65 wpm' },
+  { label: 'Journal', score: 20, icon: 'ti-pencil', color: '#FCEBEB', ic: '#993C1D', note: 'Low sentiment' },
+  { label: 'Calls', score: 40, icon: 'ti-phone', color: '#F1EFE8', ic: '#5F5E5A', note: 'Few calls made' },
+];
+
+function scoreColor(s) {
+  if (s >= 70) return '#1D9E75';
+  if (s >= 45) return '#D97706';
+  return '#D85A30';
+}
+
+let dashRendered = false;
+function renderDashboard() {
+  if (dashRendered) return;
+  dashRendered = true;
+  const grid = document.getElementById('signals-grid');
+  if (grid) {
+    signals.forEach(sig => {
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border:0.5px solid var(--color-border-tertiary);';
+      card.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <div style="width:26px;height:26px;border-radius:6px;background:${sig.color};display:flex;align-items:center;justify-content:center;">
+            <i class="ti ${sig.icon}" style="font-size:14px;color:${sig.ic};" aria-hidden="true"></i>
+          </div>
+          <span style="font-size:12px;font-weight:500;color:var(--color-text-primary);">${sig.label}</span>
+        </div>
+        <div style="height:4px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:6px;">
+          <div style="height:100%;width:${sig.score}%;background:${scoreColor(sig.score)};border-radius:2px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:var(--color-text-tertiary);">${sig.note}</span>
+          <span style="font-size:13px;font-weight:500;color:${scoreColor(sig.score)};">${sig.score}</span>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  const ctx = document.getElementById('trendChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+          data: [72, 68, 61, 54, 46, 40, 38],
+          borderColor: '#D85A30',
+          backgroundColor: 'rgba(216,90,48,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: '#D85A30',
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => 'Score: ' + Math.round(ctx.parsed.y) } } },
+        scales: {
+          y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 }, color: '#888' } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#888' } }
+        }
+      }
+    });
+  }
+}
+
+let breathInterval = null;
+let breathPhase = 0;
+const breathPhases = [
+  { label: 'Inhale', duration: 4, scale: 1.4 },
+  { label: 'Hold', duration: 4, scale: 1.4 },
+  { label: 'Exhale', duration: 4, scale: 1.0 },
+  { label: 'Hold', duration: 4, scale: 1.0 },
+];
+let breathCountdown = 4;
+let breathCycles = 0;
+
+function startBreath() {
+  const btn = document.getElementById('breath-btn');
+  btn.textContent = 'Stop';
+  btn.onclick = stopBreath;
+  breathPhase = 0; breathCycles = 0; breathCountdown = 4;
+  runBreathPhase();
+}
+
+function runBreathPhase() {
+  const phase = breathPhases[breathPhase];
+  const circle = document.getElementById('breath-circle');
+  const label = document.getElementById('breath-label');
+  const count = document.getElementById('breath-count');
+  if (circle) circle.style.transform = `scale(${phase.scale})`;
+  if (label) label.textContent = phase.label;
+  if (count) count.textContent = phase.duration;
+  breathCountdown = phase.duration;
+  if (breathInterval) clearInterval(breathInterval);
+  breathInterval = setInterval(() => {
+    breathCountdown--;
+    if (count) count.textContent = breathCountdown;
+    if (breathCountdown <= 0) {
+      clearInterval(breathInterval);
+      breathPhase = (breathPhase + 1) % 4;
+      if (breathPhase === 0) breathCycles++;
+      if (breathCycles >= 4) { stopBreath(); return; }
+      runBreathPhase();
+    }
+  }, 1000);
+}
+
+function stopBreath() {
+  if (breathInterval) clearInterval(breathInterval);
+  const circle = document.getElementById('breath-circle');
+  const label = document.getElementById('breath-label');
+  const count = document.getElementById('breath-count');
+  const btn = document.getElementById('breath-btn');
+  if (circle) circle.style.transform = 'scale(1)';
+  if (label) label.textContent = 'Done ✓';
+  if (count) count.textContent = '';
+  if (btn) { btn.textContent = 'Start again'; btn.onclick = startBreath; }
+}
+</script>
