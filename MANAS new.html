@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANAS — Final Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0B0F19;
+  --surface:  #141926;
+  --card:     #1C2539;
+  --card2:    #222D42;
+  --teal:     #028090;
+  --mint:     #02C39A;
+  --sky:      #5BC4D0;
+  --text:     #EEF2F8;
+  --muted:    #7B9EB0;
+  --border:   #263045;
+  --warn:     #E8A838;
+  --danger:   #E24B4A;
+  --green:    #27AE60;
+  --r:        18px;
+  --rs:       10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#060810;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* ── PHONE FRAME ── */
+.phone{
+  width:390px;
+  height:844px;
+  background:var(--bg);
+  border-radius:44px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 10px #1a1f2e,0 0 0 12px #0d1018,0 40px 120px rgba(0,0,0,0.8),0 0 60px rgba(2,128,144,0.15);
+}
+.notch{
+  position:absolute;
+  top:0;left:50%;transform:translateX(-50%);
+  width:120px;height:34px;
+  background:#060810;
+  border-radius:0 0 20px 20px;
+  z-index:200;
+}
+
+/* ── SCREEN SYSTEM ── */
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  animation:fadeUp .4s ease;
+}
+.screen.active{display:flex;}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:none;}
+}
+
+/* ── SHARED COMPONENTS ── */
+.scrollable{overflow-y:auto;flex:1;}
+.scrollable::-webkit-scrollbar{display:none;}
+
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 24px;border-radius:100px;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:600;
+  cursor:pointer;border:none;
+  transition:all .2s;width:100%;
+}
+.btn-primary{background:var(--mint);color:#0B0F19;}
+.btn-primary:active{transform:scale(.97);}
+.btn-secondary{background:var(--card2);color:var(--text);}
+.btn-secondary:active{transform:scale(.97);}
+.btn-outline{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-danger{background:var(--danger);color:white;}
+
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 12px;border-radius:100px;
+  font-size:11px;font-weight:600;
+}
+.pill-ok{background:rgba(39,174,96,.15);color:var(--green);}
+.pill-warn{background:rgba(232,168,56,.15);color:var(--warn);}
+.pill-danger{background:rgba(226,75,74,.15);color:var(--danger);}
+.pill-teal{background:rgba(2,128,144,.2);color:var(--sky);}
+
+.card{
+  background:var(--card);
+  border-radius:var(--r);
+  padding:20px;
+  border:1px solid var(--border);
+}
+
+.progress-bar{
+  display:flex;gap:4px;
+  margin-bottom:28px;
+}
+.progress-bar span{
+  height:3px;border-radius:2px;flex:1;
+  background:var(--border);transition:background .3s;
+}
+.progress-bar span.done{background:var(--mint);}
+
+.section-title{
+  font-size:11px;font-weight:600;
+  color:var(--muted);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:12px;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  display:flex;align-items:center;justify-content:space-around;
+  padding:12px 0 24px;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;padding:4px 16px;border-radius:12px;
+  transition:all .2s;
+}
+.nav-item .nav-icon{font-size:22px;}
+.nav-item .nav-label{font-size:10px;font-weight:500;color:var(--muted);}
+.nav-item.active .nav-label{color:var(--mint);}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px var(--mint));}
+
+/* ══════════════════════════════════════════
+   SCREEN 1 — SPLASH
+══════════════════════════════════════════ */
+#s-splash{
+  background:radial-gradient(ellipse at 30% 20%, rgba(2,195,154,.12) 0%, transparent 60%),
+             radial-gradient(ellipse at 80% 80%, rgba(2,128,144,.1) 0%, transparent 50%),
+             var(--bg);
+  align-items:center;justify-content:center;
+  gap:0;
+}
+.splash-orb{
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, rgba(2,195,154,.3), rgba(2,128,144,.1));
+  border:1px solid rgba(2,195,154,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:72px;
+  margin-bottom:32px;
+  box-shadow:0 0 60px rgba(2,195,154,.15),inset 0 0 40px rgba(2,195,154,.05);
+  animation:breathe 4s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{transform:scale(1);box-shadow:0 0 60px rgba(2,195,154,.15);}
+  50%{transform:scale(1.04);box-shadow:0 0 80px rgba(2,195,154,.25);}
+}
+.splash-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;font-weight:600;
+  color:var(--text);letter-spacing:6px;
+  margin-bottom:8px;
+}
+.splash-sub{
+  font-size:13px;color:var(--muted);
+  letter-spacing:1px;margin-bottom:48px;
+}
+.splash-pills{
+  display:flex;gap:8px;flex-wrap:wrap;
+  justify-content:center;margin-bottom:48px;
+}
+.splash-pills span{
+  padding:6px 14px;border-radius:100px;
+  border:1px solid var(--border);
+  font-size:11px;color:var(--muted);font-weight:500;
+}
+.splash-btn{padding:0 32px;width:100%;}
+
+/* ══════════════════════════════════════════
+   SCREEN 2 — WELCOME
+══════════════════════════════════════════ */
+#s-welcome{
+  background:var(--bg);
+  padding:60px 28px 40px;
+  justify-content:space-between;
+}
+.welcome-header{margin-top:20px;}
+.welcome-eyebrow{
+  font-size:11px;color:var(--mint);font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:16px;
+}
+.welcome-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:38px;line-height:1.15;
+  color:var(--text);margin-bottom:16px;
+}
+.welcome-body{font-size:14px;color:var(--muted);line-height:1.7;}
+.welcome-features{display:flex;flex-direction:column;gap:14px;margin:32px 0;}
+.wf-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  background:var(--surface);
+  border-radius:var(--rs);
+  border:1px solid var(--border);
+}
+.wf-icon{font-size:22px;width:36px;text-align:center;}
+.wf-text .wt{font-size:13px;font-weight:600;color:var(--text);}
+.wf-text .ws{font-size:12px;color:var(--muted);margin-top:2px;}
+
+/* ══════════════════════════════════════════
+   SCREEN 3 — PRIVACY INTRO
+══════════════════════════════════════════ */
+#s-privacy{
+  background:var(--bg);
+  padding:60px 28px 40px;
+  justify-content:space-between;
+}
+.privacy-icon-wrap{
+  width:72px;height:72px;border-radius:20px;
+  background:rgba(2,195,154,.1);
+  border:1px solid rgba(2,195,154,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:34px;margin-bottom:24px;
+}
+.privacy-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:32px;color:var(--text);margin-bottom:12px;
+}
+.privacy-body{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+.privacy-items{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.pi-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;
+  background:var(--surface);
+  border-radius:var(--rs);
+  border-left:3px solid var(--mint);
+}
+.pi-icon{font-size:18px;margin-top:1px;}
+.pi-text .pt{font-size:13px;font-weight:600;color:var(--text);}
+.pi-text .ps{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5;}
+
+/* ══════════════════════════════════════════
+   SCREEN 4 & 5 — ONBOARDING (PHQ-2)
+══════════════════════════════════════════ */
+#s-onboard1,#s-onboard2{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+}
+.ob-q{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;line-height:1.3;
+  color:var(--text);margin-bottom:8px;
+}
+.ob-sub{font-size:13px;color:var(--muted);margin-bottom:32px;line-height:1.6;}
+.ob-choices{display:flex;flex-direction:column;gap:10px;}
+.ob-choice{
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:var(--rs);
+  font-size:14px;font-weight:500;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);
+}
+.ob-choice .oc-dot{
+  width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--border);
+  flex-shrink:0;transition:all .2s;
+}
+.ob-choice.selected{
+  border-color:var(--mint);
+  color:var(--text);
+  background:rgba(2,195,154,.06);
+}
+.ob-choice.selected .oc-dot{
+  background:var(--mint);border-color:var(--mint);
+}
+
+/* ══════════════════════════════════════════
+   SCREEN 6 — PERMISSIONS
+══════════════════════════════════════════ */
+#s-permissions{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+#s-permissions .scrollable{padding-bottom:8px;}
+.perm-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);margin-bottom:6px;
+}
+.perm-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.perm-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.perm-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:var(--surface);
+  border-radius:var(--rs);
+  border:1px solid var(--border);
+}
+.perm-icon{font-size:22px;width:32px;text-align:center;}
+.perm-info{flex:1;}
+.perm-name{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;}
+.perm-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.toggle{
+  width:44px;height:26px;border-radius:100px;
+  background:var(--border);cursor:pointer;
+  position:relative;transition:background .3s;flex-shrink:0;
+}
+.toggle.on{background:var(--mint);}
+.toggle::after{
+  content:'';position:absolute;
+  width:20px;height:20px;border-radius:50%;
+  background:white;top:3px;left:3px;
+  transition:transform .3s;
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.toggle.on::after{transform:translateX(18px);}
+
+/* ══════════════════════════════════════════
+   SCREEN 7 — SAVE HELPLINE
+══════════════════════════════════════════ */
+#s-save-contacts{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+}
+.sc-icon{font-size:48px;margin-bottom:20px;text-align:center;}
+.sc-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);margin-bottom:10px;text-align:center;
+}
+.sc-body{font-size:13px;color:var(--muted);line-height:1.7;text-align:center;margin-bottom:28px;}
+.sc-contact{
+  background:var(--surface);border-radius:var(--r);
+  border:1px solid var(--border);
+  overflow:hidden;margin-bottom:28px;
+}
+.sc-contact-item{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-bottom:1px solid var(--border);
+}
+.sc-contact-item:last-child{border-bottom:none;}
+.sc-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(2,195,154,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.sc-name{font-size:13px;font-weight:600;color:var(--text);}
+.sc-num{font-size:12px;color:var(--mint);font-weight:500;margin-top:2px;}
+.sc-badge{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* ══════════════════════════════════════════
+   SCREEN 8 — MESSAGE TO FUTURE ME
+══════════════════════════════════════════ */
+#s-future-me{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+.fm-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);margin-bottom:8px;
+}
+.fm-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
+.fm-textarea{
+  width:100%;background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;line-height:1.6;
+  resize:none;outline:none;
+  height:160px;margin-bottom:16px;
+  transition:border-color .2s;
+}
+.fm-textarea:focus{border-color:var(--mint);}
+.fm-textarea::placeholder{color:var(--muted);}
+.fm-save-note{
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(2,195,154,.06);
+  border:1px solid rgba(2,195,154,.15);
+  border-radius:var(--rs);
+  padding:14px;margin-bottom:20px;
+}
+.fm-save-note .fn-icon{font-size:18px;margin-top:1px;}
+.fm-save-note .fn-text{font-size:12px;color:var(--muted);line-height:1.5;}
+.fm-save-note .fn-text strong{color:var(--mint);}
+
+/* ══════════════════════════════════════════
+   SCREEN 9 — BASELINE EXPLANATION
+══════════════════════════════════════════ */
+#s-baseline{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+}
+.bl-icon{
+  width:80px;height:80px;border-radius:24px;
+  background:rgba(2,128,144,.12);
+  border:1px solid rgba(2,128,144,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:24px;
+}
+.bl-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);margin-bottom:12px;
+}
+.bl-body{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
+.bl-timeline{display:flex;flex-direction:column;gap:0;}
+.bl-step{
+  display:flex;gap:14px;
+  padding-bottom:20px;
+  position:relative;
+}
+.bl-step:last-child{padding-bottom:0;}
+.bl-left{display:flex;flex-direction:column;align-items:center;}
+.bl-circle{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:white;
+  flex-shrink:0;
+}
+.bl-line{
+  width:2px;flex:1;
+  background:var(--border);
+  margin-top:4px;
+}
+.bl-step:last-child .bl-line{display:none;}
+.bl-right{padding-top:6px;}
+.bl-step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.bl-step-body{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* ══════════════════════════════════════════
+   SCREEN 10 — DASHBOARD
+══════════════════════════════════════════ */
+#s-dashboard{
+  background:var(--bg);
+  padding-top:44px;
+}
+.dash-top{
+  padding:16px 24px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dash-greeting{font-size:12px;color:var(--muted);}
+.dash-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;color:var(--text);margin-top:2px;
+}
+.dash-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(2,195,154,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:2px solid rgba(2,195,154,.3);
+}
+
+/* Score ring */
+.score-section{
+  padding:20px 24px;
+  display:flex;align-items:center;gap:20px;
+}
+.score-ring-wrap{position:relative;width:110px;height:110px;flex-shrink:0;}
+.score-ring-wrap svg{transform:rotate(-90deg);}
+.score-center{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.score-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:36px;font-weight:600;
+  color:var(--danger);line-height:1;
+}
+.score-denom{font-size:11px;color:var(--muted);}
+.score-info{flex:1;}
+.score-label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.score-status{font-size:18px;font-weight:600;color:var(--text);margin-bottom:8px;font-family:'Cormorant Garamond',serif;}
+.score-trend-text{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* 7-day chart */
+.chart-section{padding:0 24px 16px;}
+.chart-label{
+  font-size:11px;color:var(--muted);font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;
+}
+.chart-wrap{
+  background:var(--surface);border-radius:var(--rs);
+  padding:16px 12px 12px;border:1px solid var(--border);
+}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:64px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar-fill{
+  width:100%;border-radius:4px 4px 0 0;
+  transition:height 1s ease;min-height:3px;
+}
+.bar-day{font-size:9px;color:var(--muted);font-weight:500;}
+.bar-val{font-size:9px;font-weight:600;}
+
+/* Alert banner */
+.alert-banner{
+  margin:0 24px 16px;
+  padding:14px 16px;
+  border-radius:var(--rs);
+  background:rgba(232,168,56,.08);
+  border:1px solid rgba(232,168,56,.25);
+  border-left:3px solid var(--warn);
+  cursor:pointer;
+  transition:all .2s;
+}
+.alert-banner:active{transform:scale(.98);}
+.ab-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ab-title{font-size:13px;font-weight:600;color:var(--warn);}
+.ab-body{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;}
+.ab-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:100px;
+  background:var(--warn);color:#0B0F19;
+  font-size:12px;font-weight:600;
+  border:none;cursor:pointer;
+}
+
+/* Signals */
+.signals-section{padding:0 24px 16px;}
+.signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sig-card{
+  background:var(--surface);border-radius:var(--rs);
+  padding:12px;border:1px solid var(--border);
+}
+.sig-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.sig-icon{font-size:16px;}
+.sig-name{font-size:11px;font-weight:600;color:var(--muted);}
+.sig-val{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.sig-sub{font-size:10px;color:var(--muted);margin-bottom:6px;}
+.sig-bar-bg{height:3px;background:var(--border);border-radius:2px;}
+.sig-bar-fill{height:3px;border-radius:2px;transition:width 1s ease;}
+.sig-score{font-size:11px;font-weight:700;margin-top:4px;text-align:right;}
+
+/* ══════════════════════════════════════════
+   SCREEN 11 — ALERT / CHECK-IN
+══════════════════════════════════════════ */
+#s-alert{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+}
+.alert-emoji{font-size:52px;text-align:center;margin-bottom:20px;}
+.alert-eyebrow{
+  font-size:11px;color:var(--mint);font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  text-align:center;margin-bottom:12px;
+}
+.alert-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;text-align:center;
+  color:var(--text);margin-bottom:20px;
+  line-height:1.3;
+}
+.alert-info-box{
+  background:rgba(226,75,74,.07);
+  border:1px solid rgba(226,75,74,.2);
+  border-radius:var(--rs);
+  padding:14px 16px;margin-bottom:20px;
+}
+.aib-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.aib-row:last-child{margin-bottom:0;}
+.aib-label{font-size:12px;color:var(--muted);}
+.aib-val{font-size:12px;font-weight:600;color:var(--danger);}
+.alert-q{font-size:15px;font-weight:500;color:var(--text);text-align:center;margin-bottom:20px;}
+.alert-choices{display:flex;flex-direction:column;gap:10px;}
+.alert-choice{
+  padding:14px 18px;
+  border:1.5px solid var(--border);
+  border-radius:var(--rs);
+  font-size:14px;font-weight:500;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+  background:var(--surface);
+  display:flex;align-items:center;gap:10px;
+}
+.alert-choice:active{transform:scale(.98);}
+.alert-choice.level1{border-color:var(--green);color:var(--text);background:rgba(39,174,96,.05);}
+.alert-choice.level2{border-color:var(--warn);color:var(--text);background:rgba(232,168,56,.05);}
+.alert-choice.level3{border-color:var(--danger);color:var(--text);background:rgba(226,75,74,.05);}
+
+/* ══════════════════════════════════════════
+   SCREEN 12 — RESOURCES LEVEL 1 (Breathing)
+══════════════════════════════════════════ */
+#s-res1{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+.res-header{margin-bottom:24px;}
+.res-emoji{font-size:44px;margin-bottom:14px;}
+.res-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;color:var(--text);margin-bottom:8px;
+}
+.res-body{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* Breathing animation */
+.breath-circle-wrap{
+  display:flex;flex-direction:column;align-items:center;
+  margin:24px 0;
+}
+.breath-circle{
+  width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle, rgba(2,195,154,.3), rgba(2,128,144,.1));
+  border:2px solid rgba(2,195,154,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--mint);
+  animation:breathCircle 8s ease-in-out infinite;
+  margin-bottom:12px;
+}
+@keyframes breathCircle{
+  0%,100%{transform:scale(1);opacity:.7;}
+  50%{transform:scale(1.25);opacity:1;}
+}
+.breath-label{font-size:12px;color:var(--muted);text-align:center;}
+.breath-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.bs-item{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 14px;
+  background:var(--surface);border-radius:var(--rs);
+  border:1px solid var(--border);
+}
+.bs-num{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(2,195,154,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--mint);
+  flex-shrink:0;
+}
+.bs-text{font-size:13px;color:var(--muted);}
+.bs-text strong{color:var(--text);}
+
+/* ══════════════════════════════════════════
+   SCREEN 13 — RESOURCES LEVEL 2 (Talk)
+══════════════════════════════════════════ */
+#s-res2{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+
+/* ══════════════════════════════════════════
+   SCREEN 14 — RESOURCES LEVEL 3 (Helplines)
+══════════════════════════════════════════ */
+#s-res3{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+.helpline-card{
+  background:var(--surface);border-radius:var(--r);
+  border:1px solid var(--border);overflow:hidden;
+  margin-bottom:12px;
+}
+.hl-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .2s;
+}
+.hl-item:last-child{border-bottom:none;}
+.hl-item:active{background:var(--card);}
+.hl-avatar{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.hl-name{font-size:13px;font-weight:600;color:var(--text);}
+.hl-num{font-size:12px;color:var(--mint);font-weight:500;margin-top:2px;}
+.hl-tag{font-size:10px;color:var(--muted);margin-top:2px;}
+.hl-arrow{margin-left:auto;color:var(--muted);font-size:16px;}
+
+.future-me-box{
+  background:rgba(232,168,56,.06);
+  border:1px solid rgba(232,168,56,.2);
+  border-radius:var(--rs);
+  padding:16px;margin-top:16px;
+}
+.fmb-label{font-size:11px;color:var(--warn);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.fmb-text{font-size:13px;color:var(--muted);line-height:1.6;font-style:italic;}
+
+/* ══════════════════════════════════════════
+   SCREEN 15 — JOURNAL
+══════════════════════════════════════════ */
+#s-journal{
+  background:var(--bg);
+  padding:56px 28px 32px;
+}
+.journal-header{margin-bottom:20px;}
+.journal-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;color:var(--text);margin-bottom:4px;
+}
+.journal-date{font-size:12px;color:var(--muted);}
+.journal-prompt{
+  background:var(--surface);border-radius:var(--rs);
+  border:1px solid var(--border);
+  padding:14px 16px;margin-bottom:16px;
+}
+.jp-label{font-size:10px;color:var(--mint);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.jp-text{font-size:13px;color:var(--muted);line-height:1.5;}
+.journal-area{
+  width:100%;background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;line-height:1.7;
+  resize:none;outline:none;
+  height:180px;margin-bottom:12px;
+  transition:border-color .2s;
+}
+.journal-area:focus{border-color:var(--teal);}
+.journal-area::placeholder{color:var(--muted);}
+.sentinel-note{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:var(--muted);margin-bottom:16px;
+}
+.sentinel-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--mint);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ══════════════════════════════════════════
+   SCREEN 16 — ANHEDONIA PROBE
+══════════════════════════════════════════ */
+#s-anhedonia{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+}
+.an-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:100px;
+  background:rgba(91,196,208,.1);
+  border:1px solid rgba(91,196,208,.2);
+  font-size:11px;color:var(--sky);font-weight:600;
+  margin-bottom:20px;
+}
+.an-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);
+  margin-bottom:10px;line-height:1.3;
+}
+.an-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+.an-choices{display:flex;flex-direction:column;gap:10px;}
+.an-choice{
+  padding:16px 18px;
+  border:1.5px solid var(--border);
+  border-radius:var(--rs);
+  font-size:14px;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+  background:var(--surface);
+  display:flex;align-items:center;gap:12px;
+}
+.an-choice .ac-emoji{font-size:20px;}
+.an-choice:active{transform:scale(.98);}
+
+/* ══════════════════════════════════════════
+   SCREEN 17 — CRISIS EXIT
+══════════════════════════════════════════ */
+#s-exit{
+  background:radial-gradient(ellipse at 50% 0%, rgba(226,75,74,.08) 0%, transparent 60%),var(--bg);
+  padding:56px 28px 40px;
+  justify-content:space-between;
+  align-items:center;
+  text-align:center;
+}
+.exit-candle{font-size:52px;margin-bottom:16px;}
+.exit-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;color:var(--text);margin-bottom:12px;
+}
+.exit-body{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px;}
+.exit-number{
+  background:rgba(2,195,154,.08);
+  border:1px solid rgba(2,195,154,.2);
+  border-radius:var(--r);
+  padding:18px 24px;
+  margin-bottom:24px;width:100%;
+}
+.en-label{font-size:10px;color:var(--mint);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.en-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.en-num{font-size:22px;font-weight:700;color:var(--mint);letter-spacing:1px;}
+.en-tag{font-size:11px;color:var(--muted);margin-top:4px;}
+.exit-note{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;}
+.exit-btns{display:flex;gap:10px;width:100%;}
+.exit-btns .btn{flex:1;}
+
+/* ══════════════════════════════════════════
+   SCREEN 18 — FUTURE ME SAVED
+══════════════════════════════════════════ */
+#s-fm-saved{
+  background:var(--bg);
+  padding:56px 28px 40px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:0;
+}
+.saved-check{
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(2,195,154,.1);border:2px solid var(--mint);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:24px;
+  animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes popIn{
+  from{transform:scale(0);}
+  to{transform:scale(1);}
+}
+.saved-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;color:var(--text);margin-bottom:10px;
+}
+.saved-body{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+.saved-note{
+  background:var(--surface);border-radius:var(--r);
+  border:1px solid var(--border);
+  padding:16px;width:100%;margin-bottom:28px;
+  text-align:left;
+}
+.sn-app{font-size:11px;color:var(--mint);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.sn-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.sn-preview{font-size:12px;color:var(--muted);font-style:italic;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"></div>
+
+  <!-- ══ S1: SPLASH ══ -->
+  <div class="screen active" id="s-splash">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;">
+      <div class="splash-orb">🧠</div>
+      <div class="splash-logo">MANAS</div>
+      <div class="splash-sub">मन · Mind · Soul</div>
+      <div class="splash-pills">
+        <span>🔒 On-Device Only</span>
+        <span>🤫 No Account</span>
+        <span>🇮🇳 Built for India</span>
+      </div>
+    </div>
+    <div style="padding:0 32px 48px;">
+      <button class="btn btn-primary" onclick="go('s-welcome')">Begin →</button>
+      <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:12px;">A wellness companion · Not a medical device</p>
+    </div>
+  </div>
+
+  <!-- ══ S2: WELCOME ══ -->
+  <div class="screen" id="s-welcome">
+    <div class="scrollable">
+      <div class="welcome-header" style="padding:56px 28px 0;">
+        <div class="welcome-eyebrow">Welcome to Manas</div>
+        <div class="welcome-title">Feel understood,<br><em>without giving<br>anything up.</em></div>
+        <div class="welcome-body">Manas quietly learns the shape of your wellbeing — and offers calm, intelligent support when it matters most. No cloud. No account. No judgment.</div>
+        <div class="welcome-features">
+          <div class="wf-item">
+            <div class="wf-icon">🤖</div>
+            <div class="wf-text">
+              <div class="wt">Passive AI Monitoring</div>
+              <div class="ws">Works silently — you don't have to do anything daily</div>
+            </div>
+          </div>
+          <div class="wf-item">
+            <div class="wf-icon">📊</div>
+            <div class="wf-text">
+              <div class="wt">Your Personal Baseline</div>
+              <div class="ws">Learns YOUR normal — not a global average</div>
+            </div>
+          </div>
+          <div class="wf-item">
+            <div class="wf-icon">🔐</div>
+            <div class="wf-text">
+              <div class="wt">Zero Data Leaves Device</div>
+              <div class="ws">Everything processed locally. Always.</div>
+            </div>
+          </div>
+          <div class="wf-item">
+            <div class="wf-icon">🌐</div>
+            <div class="wf-text">
+              <div class="wt">Multilingual Support</div>
+              <div class="ws">Hindi · Tamil · Telugu · English</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px 28px 40px;">
+      <button class="btn btn-primary" onclick="go('s-privacy')">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══ S3: PRIVACY ══ -->
+  <div class="screen" id="s-privacy">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="privacy-icon-wrap">🔐</div>
+      <div class="privacy-title">Privacy is our<br>foundation.</div>
+      <div class="privacy-body">MANAS is built around a simple promise — your inner world stays yours. Not ours. Not anyone's.</div>
+      <div class="privacy-items">
+        <div class="pi-item">
+          <div class="pi-icon">📱</div>
+          <div class="pi-text">
+            <div class="pt">On-Device AI Only</div>
+            <div class="ps">All analysis runs locally on your phone. Your patterns never leave your device.</div>
+          </div>
+        </div>
+        <div class="pi-item">
+          <div class="pi-icon">🔑</div>
+          <div class="pi-text">
+            <div class="pt">Zero Knowledge Storage</div>
+            <div class="ps">Journals are encrypted with a key only you hold. We cannot read them.</div>
+          </div>
+        </div>
+        <div class="pi-item">
+          <div class="pi-icon">🚫</div>
+          <div class="pi-text">
+            <div class="pt">No Tracking Ever</div>
+            <div class="ps">No ads. No analytics. No third-party data sharing. Period.</div>
+          </div>
+        </div>
+        <div class="pi-item">
+          <div class="pi-icon">🗑️</div>
+          <div class="pi-text">
+            <div class="pt">Delete Everything Anytime</div>
+            <div class="ps">One tap wipes all data permanently. No traces left anywhere.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px 28px 40px;">
+      <button class="btn btn-primary" onclick="go('s-onboard1')">I understand →</button>
+    </div>
+  </div>
+
+  <!-- ══ S4: ONBOARDING Q1 (PHQ-2) ══ -->
+  <div class="screen" id="s-onboard1">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="progress-bar">
+        <span class="done"></span><span></span><span></span><span></span>
+      </div>
+      <div class="section-title">Quick Check-in · 1 of 2</div>
+      <div class="ob-q">Over the past 2 weeks…</div>
+      <div class="ob-sub">How often have you felt <strong style="color:var(--text)">little interest or pleasure</strong> in things you usually enjoy?</div>
+      <div class="ob-choices" id="q1-choices">
+        <div class="ob-choice" onclick="selectOb(this,'q1','s-onboard2')">
+          <div class="oc-dot"></div>Not at all — still enjoying things
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q1','s-onboard2')">
+          <div class="oc-dot"></div>Several days — some off moments
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q1','s-onboard2')">
+          <div class="oc-dot"></div>More than half the days
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q1','s-onboard2')">
+          <div class="oc-dot"></div>Nearly every day
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:20px;text-align:center;">Your answers are processed locally and never shared.</p>
+    </div>
+  </div>
+
+  <!-- ══ S5: ONBOARDING Q2 (PHQ-2) ══ -->
+  <div class="screen" id="s-onboard2">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="progress-bar">
+        <span class="done"></span><span class="done"></span><span></span><span></span>
+      </div>
+      <div class="section-title">Quick Check-in · 2 of 2</div>
+      <div class="ob-q">Over the past 2 weeks…</div>
+      <div class="ob-sub">How often have you felt <strong style="color:var(--text)">nervous, anxious, or unable to stop worrying?</strong></div>
+      <div class="ob-choices" id="q2-choices">
+        <div class="ob-choice" onclick="selectOb(this,'q2','s-permissions')">
+          <div class="oc-dot"></div>Not at all — feeling calm
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q2','s-permissions')">
+          <div class="oc-dot"></div>Several days — manageable
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q2','s-permissions')">
+          <div class="oc-dot"></div>More than half the days
+        </div>
+        <div class="ob-choice" onclick="selectOb(this,'q2','s-permissions')">
+          <div class="oc-dot"></div>Nearly every day — hard to switch off
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S6: PERMISSIONS ══ -->
+  <div class="screen" id="s-permissions">
+    <div style="padding:56px 28px 0 28px;">
+      <div class="progress-bar">
+        <span class="done"></span><span class="done"></span><span class="done"></span><span></span>
+      </div>
+      <div class="perm-title">Choose what<br>Manas can see.</div>
+      <div class="perm-sub">All signals are processed <strong style="color:var(--mint)">only on this device.</strong> Toggle any off anytime.</div>
+    </div>
+    <div class="scrollable" style="padding:0 28px 8px;">
+      <div class="perm-list">
+        <div class="perm-row">
+          <div class="perm-icon">😴</div>
+          <div class="perm-info">
+            <div class="perm-name">Sleep Duration <span class="pill pill-danger" style="font-size:9px;padding:2px 7px;">Required</span></div>
+            <div class="perm-desc">Hours slept via accelerometer — not location</div>
+          </div>
+          <div class="toggle on" id="tog-sleep"></div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-icon">🚶</div>
+          <div class="perm-info">
+            <div class="perm-name">Physical Movement <span class="pill pill-danger" style="font-size:9px;padding:2px 7px;">Required</span></div>
+            <div class="perm-desc">Activity level — not where you go</div>
+          </div>
+          <div class="toggle on" id="tog-move"></div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-icon">📱</div>
+          <div class="perm-info">
+            <div class="perm-name">Social Media Engagement <span class="pill pill-danger" style="font-size:9px;padding:2px 7px;">Required</span></div>
+            <div class="perm-desc">Time on apps + active vs passive use ratio</div>
+          </div>
+          <div class="toggle on" id="tog-social"></div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-icon">📞</div>
+          <div class="perm-info">
+            <div class="perm-name">Call Duration <span class="pill pill-ok" style="font-size:9px;padding:2px 7px;">Optional</span></div>
+            <div class="perm-desc">How long calls last — not who you call</div>
+          </div>
+          <div class="toggle on" id="tog-call" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-icon">🔔</div>
+          <div class="perm-info">
+            <div class="perm-name">Notification Response <span class="pill pill-ok" style="font-size:9px;padding:2px 7px;">Optional</span></div>
+            <div class="perm-desc">How quickly you reply — not message content</div>
+          </div>
+          <div class="toggle on" id="tog-notif" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-icon">📓</div>
+          <div class="perm-info">
+            <div class="perm-name">Journal Sentiment <span class="pill pill-ok" style="font-size:9px;padding:2px 7px;">Optional</span></div>
+            <div class="perm-desc">Emotional tone only — content never stored</div>
+          </div>
+          <div class="toggle on" id="tog-journal" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:12px 28px 32px;">
+      <button class="btn btn-primary" onclick="go('s-save-contacts')">Confirm Permissions →</button>
+    </div>
+  </div>
+
+  <!-- ══ S7: SAVE HELPLINE ══ -->
+  <div class="screen" id="s-save-contacts">
+    <div class="scrollable" style="padding:56px 28px 0;text-align:center;">
+      <div class="sc-icon">📋</div>
+      <div class="sc-title">One important<br>step.</div>
+      <div class="sc-body">Before we begin — please save these numbers to your contacts. You may never need them. But they'll always be there — even if you remove this app.</div>
+      <div class="sc-contact">
+        <div class="sc-contact-item">
+          <div class="sc-avatar">💚</div>
+          <div>
+            <div class="sc-name">iCall — Free Counselling</div>
+            <div class="sc-num">9152987821</div>
+            <div class="sc-badge">Confidential · Available now</div>
+          </div>
+        </div>
+        <div class="sc-contact-item">
+          <div class="sc-avatar">💙</div>
+          <div>
+            <div class="sc-name">Vandrevala Foundation</div>
+            <div class="sc-num">1860-2662-345</div>
+            <div class="sc-badge">24/7 · Free · Confidential</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.6;">These numbers survive app deletion because they'll live in your phone's contacts — not in Manas.</p>
+    </div>
+    <div style="padding:12px 28px 40px;display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="go('s-future-me')">✓ Saved to Contacts →</button>
+      <button class="btn btn-outline" onclick="go('s-future-me')">I'll do this later</button>
+    </div>
+  </div>
+
+  <!-- ══ S8: MESSAGE TO FUTURE ME ══ -->
+  <div class="screen" id="s-future-me">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="progress-bar">
+        <span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span>
+      </div>
+      <div class="fm-title">A message for<br>harder days.</div>
+      <div class="fm-sub">Write something to yourself — for a day when things feel heavy. Manas will show you this when you need it most. You don't have to have it figured out. Just write something true.</div>
+      <textarea class="fm-textarea" id="fm-text" placeholder="Hey… I know things feel hard right now. But remember when you…"></textarea>
+      <div class="fm-save-note">
+        <div class="fn-icon">📝</div>
+        <div class="fn-text">This message will be saved to your <strong>Google Keep / Notes app</strong> — so it stays with you even if you remove Manas. It belongs to you, not us.</div>
+      </div>
+    </div>
+    <div style="padding:12px 28px 32px;display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" onclick="saveFutureMe()">Save to My Notes →</button>
+      <button class="btn btn-outline" onclick="go('s-baseline')">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- ══ S8b: FUTURE ME SAVED ══ -->
+  <div class="screen" id="s-fm-saved">
+    <div class="saved-check">✓</div>
+    <div class="saved-title">Saved to your Notes.</div>
+    <div class="saved-body">Your message now lives in Google Keep — completely independent of Manas. It will be there when you need it, no matter what happens to this app.</div>
+    <div class="saved-note">
+      <div class="sn-app">📝 Google Keep</div>
+      <div class="sn-title">A message for when things get hard</div>
+      <div class="sn-preview" id="fm-preview">Hey… I know things feel hard right now…</div>
+    </div>
+    <button class="btn btn-primary" onclick="go('s-baseline')">Continue →</button>
+  </div>
+
+  <!-- ══ S9: BASELINE EXPLANATION ══ -->
+  <div class="screen" id="s-baseline">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="bl-icon">📊</div>
+      <div class="bl-title">Learning your<br>normal first.</div>
+      <div class="bl-body">Before Manas can detect anything meaningful, it needs to understand what normal looks like for you — not for anyone else. Here's how the next few weeks work:</div>
+      <div class="bl-timeline">
+        <div class="bl-step">
+          <div class="bl-left">
+            <div class="bl-circle">1</div>
+            <div class="bl-line"></div>
+          </div>
+          <div class="bl-right">
+            <div class="bl-step-title">Days 1–14 · Silent Learning</div>
+            <div class="bl-step-body">Manas watches quietly. No alerts. No judgements. Just learning your sleep, movement, and usage patterns.</div>
+          </div>
+        </div>
+        <div class="bl-step">
+          <div class="bl-left">
+            <div class="bl-circle">2</div>
+            <div class="bl-line"></div>
+          </div>
+          <div class="bl-right">
+            <div class="bl-step-title">Day 15 · Your Baseline is Set</div>
+            <div class="bl-step-body">Your personal normal is established. From now on, Manas compares you to yourself — not a global average.</div>
+          </div>
+        </div>
+        <div class="bl-step">
+          <div class="bl-left">
+            <div class="bl-circle">3</div>
+            <div class="bl-line"></div>
+          </div>
+          <div class="bl-right">
+            <div class="bl-step-title">Ongoing · Gradual Monitoring</div>
+            <div class="bl-step-body">Only consistent deviation over 10–14 days triggers a gentle check-in. One bad day changes nothing.</div>
+          </div>
+        </div>
+        <div class="bl-step">
+          <div class="bl-left">
+            <div class="bl-circle">4</div>
+          </div>
+          <div class="bl-right">
+            <div class="bl-step-title">Every 2 Weeks · Anhedonia Probe</div>
+            <div class="bl-step-body">A single gentle question about whether things are bringing you joy — to catch what behaviour signals might miss.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:16px 28px 40px;">
+      <button class="btn btn-primary" onclick="go('s-dashboard')">Start My Journey →</button>
+    </div>
+  </div>
+
+  <!-- ══ S10: DASHBOARD ══ -->
+  <div class="screen" id="s-dashboard">
+    <div class="scrollable">
+      <!-- Top -->
+      <div class="dash-top">
+        <div>
+          <div class="dash-greeting">Good evening,</div>
+          <div class="dash-name">Arjun 👋</div>
+        </div>
+        <div class="dash-avatar">🧑</div>
+      </div>
+
+      <!-- Score -->
+      <div class="score-section">
+        <div class="score-ring-wrap">
+          <svg width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="46" fill="none" stroke="#263045" stroke-width="9"/>
+            <circle cx="55" cy="55" r="46" fill="none" stroke="#E24B4A" stroke-width="9"
+              stroke-dasharray="289" stroke-dashoffset="179" stroke-linecap="round"
+              style="transition:stroke-dashoffset 1.5s ease;"/>
+          </svg>
+          <div class="score-center">
+            <div class="score-num" id="dash-score">0</div>
+            <div class="score-denom">/100</div>
+          </div>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Wellness Score</div>
+          <div class="score-status">Needs Attention</div>
+          <div><span class="pill pill-danger">⬇ Declining · Week 5</span></div>
+          <div class="score-trend-text" style="margin-top:8px;">Consistent shift across 5 signals for 11 days.</div>
+        </div>
+      </div>
+
+      <!-- 7-Day Chart -->
+      <div class="chart-section">
+        <div class="chart-label">7-Day Trend</div>
+        <div class="chart-wrap">
+          <div class="chart-bars" id="chart-bars"></div>
+        </div>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="alert-banner" onclick="go('s-alert')">
+        <div class="ab-head">
+          <span>⚠️</span>
+          <div class="ab-title">Manas noticed some changes</div>
+        </div>
+        <div class="ab-body">Your patterns have shifted over the past 2 weeks. How are you actually feeling?</div>
+        <button class="ab-btn">Check in now →</button>
+      </div>
+
+      <!-- Signals -->
+      <div class="signals-section">
+        <div class="section-title">Signal Breakdown</div>
+        <div class="signals-grid">
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">😴</div><div class="sig-name">Sleep</div></div>
+            <div class="sig-val">10.5 hrs</div>
+            <div class="sig-sub">vs 7.5 baseline</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:60%;background:var(--warn);"></div></div>
+            <div class="sig-score" style="color:var(--warn);">60</div>
+          </div>
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">🚶</div><div class="sig-name">Movement</div></div>
+            <div class="sig-val">Very low</div>
+            <div class="sig-sub">activity dropped</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:25%;background:var(--danger);"></div></div>
+            <div class="sig-score" style="color:var(--danger);">25</div>
+          </div>
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">📱</div><div class="sig-name">Social Media</div></div>
+            <div class="sig-val">40 min · passive</div>
+            <div class="sig-sub">vs 2hr active</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:30%;background:var(--danger);"></div></div>
+            <div class="sig-score" style="color:var(--danger);">30</div>
+          </div>
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">📞</div><div class="sig-name">Call Duration</div></div>
+            <div class="sig-val">Near zero</div>
+            <div class="sig-sub">calls very short</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:20%;background:var(--danger);"></div></div>
+            <div class="sig-score" style="color:var(--danger);">20</div>
+          </div>
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">🔔</div><div class="sig-name">Response Time</div></div>
+            <div class="sig-val">3–4 hrs delay</div>
+            <div class="sig-sub">was 5 min</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:22%;background:var(--danger);"></div></div>
+            <div class="sig-score" style="color:var(--danger);">22</div>
+          </div>
+          <div class="sig-card">
+            <div class="sig-head"><div class="sig-icon">📓</div><div class="sig-name">Journal</div></div>
+            <div class="sig-val">Low sentiment</div>
+            <div class="sig-sub">flat, negative tone</div>
+            <div class="sig-bar-bg"><div class="sig-bar-fill" style="width:15%;background:var(--danger);"></div></div>
+            <div class="sig-score" style="color:var(--danger);">15</div>
+          </div>
+        </div>
+
+        <!-- Personality Calibration Note -->
+        <div style="margin-top:12px;padding:12px 14px;background:rgba(2,128,144,.07);border-radius:var(--rs);border:1px solid rgba(2,128,144,.15);display:flex;gap:8px;align-items:flex-start;">
+          <div style="font-size:14px;margin-top:1px;">🧠</div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:3px;">Personality Calibration Active</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5;">Manas knows your natural patterns. These signals represent genuine deviation from your personal baseline.</div>
+          </div>
+        </div>
+
+        <!-- This is just me button -->
+        <button class="btn btn-outline" style="margin-top:10px;font-size:12px;padding:10px;" onclick="alert('Signal sensitivity reduced for 7 days. Your baseline will be recalibrated.')">💬 &nbsp;This is just me — recalibrate</button>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="go('s-dashboard')">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="go('s-journal')">
+        <div class="nav-icon">📓</div>
+        <div class="nav-label">Journal</div>
+      </div>
+      <div class="nav-item" onclick="go('s-res3')">
+        <div class="nav-icon">🆘</div>
+        <div class="nav-label">Resources</div>
+      </div>
+      <div class="nav-item" onclick="showExit()">
+        <div class="nav-icon">⚙️</div>
+        <div class="nav-label">Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ S11: ALERT CHECK-IN ══ -->
+  <div class="screen" id="s-alert">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="alert-emoji">💙</div>
+      <div class="alert-eyebrow">Manas Check-in</div>
+      <div class="alert-title">Hey Arjun, we've noticed some changes in your patterns.</div>
+      <div class="alert-info-box">
+        <div class="aib-row"><div class="aib-label">Wellness Score</div><div class="aib-val">38 / 100 ⬇</div></div>
+        <div class="aib-row"><div class="aib-label">Days declining</div><div class="aib-val">11 consecutive</div></div>
+        <div class="aib-row"><div class="aib-label">Signals affected</div><div class="aib-val">5 of 6</div></div>
+      </div>
+      <div class="alert-q">This isn't a diagnosis. How are you actually feeling today?</div>
+      <div class="alert-choices">
+        <div class="alert-choice level1" onclick="go('s-res1')">
+          <span>😊</span> Pretty good actually
+        </div>
+        <div class="alert-choice level1" onclick="go('s-res1')">
+          <span>😐</span> Just tired — nothing serious
+        </div>
+        <div class="alert-choice level2" onclick="go('s-res2')">
+          <span>😔</span> Honestly, not great
+        </div>
+        <div class="alert-choice level3" onclick="go('s-res3')">
+          <span>😞</span> I've been really struggling
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin:16px 0;">Your response stays only on this device. No one is notified.</p>
+    </div>
+    <div style="padding:8px 28px 32px;">
+      <button class="btn btn-outline" style="font-size:12px;padding:10px;" onclick="go('s-dashboard')">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ══ S12: LEVEL 1 — BREATHING ══ -->
+  <div class="screen" id="s-res1">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="res-header">
+        <div class="res-emoji">🌬️</div>
+        <div class="res-title">Glad you're okay, Arjun.</div>
+        <div class="res-body">We'll keep watching gently. Here's something that might help with any stress you're carrying.</div>
+      </div>
+      <div style="margin-bottom:16px;"><span class="pill pill-ok">Level 1 · Self Care</span></div>
+      <div class="breath-circle-wrap">
+        <div class="breath-circle">Breathe</div>
+        <div class="breath-label">Inhale 4s · Hold 4s · Exhale 4s · Hold 4s</div>
+      </div>
+      <div class="section-title" style="margin-top:4px;">Box Breathing Steps</div>
+      <div class="breath-steps">
+        <div class="bs-item"><div class="bs-num">1</div><div class="bs-text"><strong>Inhale</strong> slowly through your nose for 4 seconds</div></div>
+        <div class="bs-item"><div class="bs-num">2</div><div class="bs-text"><strong>Hold</strong> your breath gently for 4 seconds</div></div>
+        <div class="bs-item"><div class="bs-num">3</div><div class="bs-text"><strong>Exhale</strong> slowly through your mouth for 4 seconds</div></div>
+        <div class="bs-item"><div class="bs-num">4</div><div class="bs-text"><strong>Hold</strong> again for 4 seconds. Repeat 4 times.</div></div>
+      </div>
+    </div>
+    <div style="padding:12px 28px 32px;">
+      <button class="btn btn-primary" onclick="go('s-dashboard')">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ══ S13: LEVEL 2 — TALK ══ -->
+  <div class="screen" id="s-res2">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="res-emoji">🤝</div>
+      <div style="margin-bottom:8px;"><span class="pill pill-warn">Level 2 · Reach Out</span></div>
+      <div class="res-title" style="margin-bottom:8px;">Thank you for being honest, Arjun.</div>
+      <div class="res-body" style="margin-bottom:24px;">That takes courage. You don't have to figure this out alone. Talking to someone — even one person — makes a real difference.</div>
+
+      <div class="section-title">Try This First</div>
+      <div style="background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;">
+        <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">👨‍👩‍👦 Talk to Someone You Trust</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">A friend. A family member. Anyone you feel safe with. You don't need to explain everything. Just say you've been having a hard time.</div>
+        </div>
+        <div style="padding:16px 18px;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">📝 Try Journaling Today</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.5;">Sometimes writing it out helps more than saying it out loud. Your journal is private and encrypted.</div>
+          <button class="btn btn-secondary" style="margin-top:10px;font-size:12px;padding:10px;" onclick="go('s-journal')">Open Journal →</button>
+        </div>
+      </div>
+
+      <div class="section-title">If You Need More Support</div>
+      <div class="helpline-card">
+        <div class="hl-item">
+          <div class="hl-avatar" style="background:rgba(2,195,154,.1);">📞</div>
+          <div>
+            <div class="hl-name">iCall — Free Counselling</div>
+            <div class="hl-num">9152987821</div>
+            <div class="hl-tag">Confidential · Free · Available now</div>
+          </div>
+          <div class="hl-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="future-me-box">
+        <div class="fmb-label">💌 From Your Past Self</div>
+        <div class="fmb-text">"Hey… I know things feel hard right now. But you've gotten through hard weeks before. You always do. Call someone."</div>
+      </div>
+    </div>
+    <div style="padding:12px 28px 32px;">
+      <button class="btn btn-primary" onclick="go('s-dashboard')">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ══ S14: LEVEL 3 — HELPLINES ══ -->
+  <div class="screen" id="s-res3">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="res-emoji">💙</div>
+      <div style="margin-bottom:8px;"><span class="pill pill-danger">Level 3 · Get Real Help</span></div>
+      <div class="res-title" style="margin-bottom:8px;">You reached out. That matters.</div>
+      <div class="res-body" style="margin-bottom:20px;">What you're feeling is real. Please reach out to someone who can properly support you — right now, today.</div>
+
+      <div class="section-title">Free Helplines — Available Now</div>
+      <div class="helpline-card">
+        <div class="hl-item">
+          <div class="hl-avatar" style="background:rgba(2,195,154,.1);">💚</div>
+          <div>
+            <div class="hl-name">iCall (TISS)</div>
+            <div class="hl-num">9152987821</div>
+            <div class="hl-tag">Free · Confidential · Trained counsellors</div>
+          </div>
+          <div class="hl-arrow">›</div>
+        </div>
+        <div class="hl-item">
+          <div class="hl-avatar" style="background:rgba(91,196,208,.1);">💙</div>
+          <div>
+            <div class="hl-name">Vandrevala Foundation</div>
+            <div class="hl-num">1860-2662-345</div>
+            <div class="hl-tag">24/7 · Free · Any language</div>
+          </div>
+          <div class="hl-arrow">›</div>
+        </div>
+        <div class="hl-item">
+          <div class="hl-avatar" style="background:rgba(232,168,56,.1);">🏫</div>
+          <div>
+            <div class="hl-name">NIMHANS Helpline</div>
+            <div class="hl-num">080-46110007</div>
+            <div class="hl-tag">Government · Free · Specialists</div>
+          </div>
+          <div class="hl-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:16px;">Subsidised Counselling</div>
+      <div style="background:var(--surface);border-radius:var(--rs);border:1px solid var(--border);padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">🏫 College Counselling Cell</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Free sessions available. Completely confidential. No referral needed.</div>
+      </div>
+
+      <div class="future-me-box">
+        <div class="fmb-label">💌 A Message from You</div>
+        <div class="fmb-text">"Hey… I know things feel hard right now. But you've gotten through hard weeks before. You always do. Call someone."</div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin:12px 0 4px;">Manas is a bridge — not a replacement for professional help.</p>
+    </div>
+    <div style="padding:8px 28px 32px;">
+      <button class="btn btn-primary" onclick="go('s-dashboard')">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- ══ S15: JOURNAL ══ -->
+  <div class="screen" id="s-journal">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="journal-header">
+        <div class="journal-title">Journal</div>
+        <div class="journal-date" id="j-date">Loading date…</div>
+      </div>
+      <div class="journal-prompt">
+        <div class="jp-label">Today's Prompt</div>
+        <div class="jp-text">What's one thing that felt heavy today — and one thing, however small, that didn't?</div>
+      </div>
+      <textarea class="journal-area" id="journal-text" placeholder="Write freely. This is yours alone…" oninput="checkSentinel(this.value)"></textarea>
+      <div class="sentinel-note">
+        <div class="sentinel-dot"></div>
+        <span>Journal Sentinel active — emotional tone analysed locally only</span>
+      </div>
+      <!-- Sentinel warning — hidden by default -->
+      <div id="sentinel-warning" style="display:none;background:rgba(226,75,74,.07);border:1px solid rgba(226,75,74,.25);border-left:3px solid var(--danger);border-radius:var(--rs);padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;color:var(--danger);margin-bottom:4px;">💙 We're here if you need us</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:10px;">If you're struggling right now — you don't have to be alone. A conversation can help.</div>
+        <div style="font-size:14px;font-weight:700;color:var(--mint);">iCall: 9152987821</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;">Free · Confidential · Available now</div>
+      </div>
+    </div>
+    <div style="padding:8px 28px 32px;display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" onclick="go('s-dashboard')">Save Entry ✓</button>
+      <button class="btn btn-outline" style="font-size:12px;padding:10px;" onclick="go('s-dashboard')">← Back</button>
+    </div>
+  </div>
+
+  <!-- ══ S16: ANHEDONIA PROBE ══ -->
+  <div class="screen" id="s-anhedonia">
+    <div class="scrollable" style="padding:56px 28px 0;">
+      <div class="an-badge">⏱ Bi-Weekly Check · Every 2 Weeks</div>
+      <div class="an-title">One quick question, Arjun.</div>
+      <div class="an-sub">This is the only question Manas ever asks unprompted — once every two weeks. It helps catch what passive signals sometimes miss.</div>
+      <div style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:24px;line-height:1.4;font-family:'Cormorant Garamond',serif;">
+        Has anything genuinely made you happy this week?
+      </div>
+      <div class="an-choices">
+        <div class="an-choice" onclick="go('s-dashboard')">
+          <div class="ac-emoji">😊</div>Yes — a few things actually
+        </div>
+        <div class="an-choice" onclick="go('s-dashboard')">
+          <div class="ac-emoji">😐</div>Kind of — but it felt a bit flat
+        </div>
+        <div class="an-choice" onclick="go('s-res2')">
+          <div class="ac-emoji">😔</div>Not really — not much has
+        </div>
+        <div class="an-choice" onclick="go('s-res3')">
+          <div class="ac-emoji">😞</div>I can't remember the last time something did
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:16px;">This targets anhedonia — the inability to feel joy — which behavioural signals can miss.</p>
+    </div>
+    <div style="padding:8px 28px 32px;">
+      <button class="btn btn-outline" style="font-size:12px;padding:10px;" onclick="go('s-dashboard')">← Skip for now</button>
+    </div>
+  </div>
+
+  <!-- ══ S17: CRISIS EXIT ══ -->
+  <div class="screen" id="s-exit">
+    <div class="exit-candle">🕯️</div>
+    <div class="exit-title">Before you go…</div>
+    <div class="exit-body">We noticed you've been going through a tough time lately. You don't have to keep the app. But please keep this number.</div>
+    <div class="exit-number">
+      <div class="en-label">iCall · Free · Confidential</div>
+      <div class="en-name">Available right now</div>
+      <div class="en-num">9152987821</div>
+      <div class="en-tag">You never have to explain anything. Just call.</div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;text-align:center;">Take care of yourself, Arjun. 💙</p>
+    <div class="exit-btns">
+      <button class="btn btn-secondary" onclick="go('s-dashboard')">Stay on Manas</button>
+      <button class="btn btn-danger" onclick="alert('In a real device, this would permanently delete all local data. Your contacts and Notes app message remain.')">Delete App</button>
+    </div>
+    <div class="exit-note">All data is stored only on this device. Deleting removes it permanently — from everywhere.</div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// ── NAVIGATION
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='s-dashboard') initDash();
+  if(id==='s-journal') initJournal();
+}
+
+// ── CHOICE SELECTION (onboarding)
+function selectOb(el, group, next){
+  document.querySelectorAll(`#${group}-choices .ob-choice`).forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>go(next), 300);
+}
+
+// ── FUTURE ME SAVE
+function saveFutureMe(){
+  const txt = document.getElementById('fm-text').value.trim();
+  const preview = txt ? txt.substring(0,60)+'…' : 'A message for when things get hard…';
+  document.getElementById('fm-preview').textContent = preview;
+  go('s-fm-saved');
+}
+
+// ── DASHBOARD INIT
+function initDash(){
+  // Animate score
+  let n=0;
+  const el=document.getElementById('dash-score');
+  const timer=setInterval(()=>{
+    n+=2;if(n>=38){n=38;clearInterval(timer);}
+    el.textContent=n;
+  },20);
+  // Build chart
+  const container=document.getElementById('chart-bars');
+  if(container.children.length>0) return;
+  const data=[
+    {d:'Mon',v:72,c:'#27AE60'},
+    {d:'Tue',v:68,c:'#27AE60'},
+    {d:'Wed',v:60,c:'#E8A838'},
+    {d:'Thu',v:54,c:'#E8A838'},
+    {d:'Fri',v:47,c:'#E8A838'},
+    {d:'Sat',v:41,c:'#E24B4A'},
+    {d:'Today',v:38,c:'#E24B4A'},
+  ];
+  data.forEach(d=>{
+    const col=document.createElement('div');
+    col.className='bar-col';
+    const val=document.createElement('div');
+    val.className='bar-val';
+    val.style.color=d.c;
+    val.textContent=d.v;
+    const bar=document.createElement('div');
+    bar.className='bar-fill';
+    bar.style.background=d.c;
+    bar.style.height='0px';
+    bar.style.width='100%';
+    const day=document.createElement('div');
+    day.className='bar-day';
+    day.textContent=d.d;
+    col.appendChild(val);col.appendChild(bar);col.appendChild(day);
+    container.appendChild(col);
+    setTimeout(()=>{bar.style.height=(d.v/100*64)+'px';},100);
+  });
+}
+
+// ── JOURNAL INIT
+function initJournal(){
+  const now=new Date();
+  const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  document.getElementById('j-date').textContent=now.toLocaleDateString('en-IN',opts);
+}
+
+// ── JOURNAL SENTINEL
+const crisisWords=['pointless','hopeless','ending','end it','give up','no point','can\'t go on','tired of everything','worthless','disappear'];
+function checkSentinel(text){
+  const lower=text.toLowerCase();
+  const found=crisisWords.some(w=>lower.includes(w));
+  document.getElementById('sentinel-warning').style.display=found?'block':'none';
+}
+
+// ── SHOW EXIT
+function showExit(){
+  go('s-exit');
+}
+
+// ── AUTO-START JOURNAL DATE
+document.addEventListener('DOMContentLoaded',()=>{
+  initJournal();
+});
+</script>
+</body>
+</html>
